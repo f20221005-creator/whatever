@@ -44,7 +44,7 @@ if "yes_size" not in st.session_state:
     st.session_state.yes_size = 1.0
 
 # ---------- Load images (01..05) from ./images ----------
-IMAGE_FOLDER = "images"
+IMAGE_FOLDER = "Images"
 # Supports any extension; will pick the first match per number
 CANDIDATES = [
     ("01", [".jpg", ".jpeg", ".png", ".webp"]),
