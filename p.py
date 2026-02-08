@@ -259,11 +259,11 @@ for base, exts in CANDIDATES:
         images.append(Image.open(found))
 
 NO_RESPONSES = [
-    "Are you suuure? 🥺",
-    "Okay but… I planned something cute 😌",
+    "Are you sure Pa? 🥺",
+    "Okay but… I am baby 😌",
     "Plot twist: you meant YES 🤍",
-    "I brought snacks though 🍫",
-    "One more chance, pretty please? 💗",
+    "Ill feed you food 🍫",
+    "One more chance, pretty Pa please? 💗",
     "I’m still your biggest fan 🥰",
 ]
 
