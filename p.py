@@ -3,7 +3,42 @@ import random
 import streamlit as st
 from PIL import Image
 
-st.set_page_config(page_title="💘 Valentine?", page_icon="💘", layout="centered")
+# ---------- Page config ----------
+st.set_page_config(
+    page_title="💘 Valentine?",
+    page_icon="💘",
+    layout="centered",
+    initial_sidebar_state="collapsed",  # hide sidebar by default for everyone
+)
+
+# ---------- Admin-only customization via secret URL param ----------
+# Use: https://yourapp.streamlit.app/?key=YOUR_SECRET
+params = st.query_params
+admin_key = params.get("key", "")
+
+SECRET = "change_this_to_a_long_secret"  # <-- CHANGE THIS
+
+show_custom = (admin_key == SECRET)
+
+# ---------- Default values (what everyone sees) ----------
+DEFAULT_YOUR_NAME = "Max"
+DEFAULT_HER_NAME = "My Love"
+DEFAULT_DATE_IDEA = "dinner + dessert + a long walk"
+DEFAULT_SONG_LINK = ""  # e.g. https://open.spotify.com/track/...
+
+# ---------- Sidebar personalization (ONLY for you with the secret key) ----------
+if show_custom:
+    with st.sidebar:
+        st.header("💌 Customize (Admin)")
+        your_name = st.text_input("Your name", value=DEFAULT_YOUR_NAME)
+        her_name = st.text_input("Her name", value=DEFAULT_HER_NAME)
+        date_idea = st.text_input("Date idea", value=DEFAULT_DATE_IDEA)
+        song_link = st.text_input("Song link (optional)", value=DEFAULT_SONG_LINK)
+else:
+    your_name = DEFAULT_YOUR_NAME
+    her_name = DEFAULT_HER_NAME
+    date_idea = DEFAULT_DATE_IDEA
+    song_link = DEFAULT_SONG_LINK
 
 # ---------- CSS (cute + clean) ----------
 st.markdown(
@@ -27,14 +62,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ---------- Sidebar personalization ----------
-with st.sidebar:
-    st.header("💌 Customize")
-    your_name = st.text_input("Your name", value="Romil")
-    her_name = st.text_input("Her name", value="Arshiya")
-    date_idea = st.text_input("Date idea (optional)", value="We book a hotel this weekend and have fun")
-    song_link = st.text_input("Song link (optional)", value="")
-
 # ---------- Session state ----------
 if "stage" not in st.session_state:
     st.session_state.stage = "ask"  # ask -> accepted
@@ -43,9 +70,11 @@ if "no_clicks" not in st.session_state:
 if "yes_size" not in st.session_state:
     st.session_state.yes_size = 1.0
 
-# ---------- Load images (01..05) from ./images ----------
-IMAGE_FOLDER = "Images"
-# Supports any extension; will pick the first match per number
+# ---------- Load images 01..05 from ./images (cloud-safe absolute path) ----------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGE_FOLDER = os.path.join(BASE_DIR, "images")
+
+# Supports any extension; picks the first match per number
 CANDIDATES = [
     ("01", [".jpg", ".jpeg", ".png", ".webp"]),
     ("02", [".jpg", ".jpeg", ".png", ".webp"]),
@@ -68,19 +97,17 @@ for base, exts in CANDIDATES:
         images.append(Image.open(found_path))
         image_labels.append(base)
 
-# Messages that appear after clicking "No"
 NO_RESPONSES = [
-    "But Pa? 🥺",
-    "but Baby? 💗",
-    "Hehe ig button not working 😤",
-    "Okay but what if kissy? 😊",
-    "Request 🍫",
+    "Are you suuure? 🥺",
+    "Try again… for me? 💗",
+    "That button seems broken 😤",
+    "Okay but… what if I ask nicely? 😊",
+    "I brought snacks though 🍫",
     "I’ll be extra cute today 😌",
     "Plot twist: you meant YES 😇",
     "I’m not giving up 😤💘",
 ]
 
-# Captions for images 01..05 (you can edit these)
 CAPTIONS = [
     "Me when you say no 🥺",
     "Still hopeful 😇",
@@ -149,8 +176,9 @@ with st.container():
                 st.image(images[idx], caption=caption, use_container_width=True)
             else:
                 st.warning(
-                    "I couldn't find your images. Make sure you have a folder named `images/` "
-                    "and files named like `01.jpg` ... `05.jpg` (or .png/.jpeg/.webp)."
+                    "I couldn't find your images. Make sure your repo has a folder named `images/` "
+                    "in the root and files named `01.jpg`..`05.jpg` (or .jpeg/.png/.webp). "
+                    "Also note Linux is case-sensitive: `images` ≠ `Images`."
                 )
 
         st.divider()
@@ -188,3 +216,7 @@ with st.container():
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown('<div class="footer">Made with 💘 on Streamlit</div>', unsafe_allow_html=True)
+
+# Optional: show a tiny admin hint only to you
+if show_custom:
+    st.caption("🔐 Admin mode enabled (sidebar unlocked). Share the normal link without ?key=...")
