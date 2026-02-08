@@ -17,13 +17,12 @@ params = st.query_params
 admin_key = params.get("key", "")
 
 SECRET = "change_this_to_a_long_secret"  # <-- CHANGE THIS
-
 show_custom = (admin_key == SECRET)
 
 # ---------- Default values (what everyone sees) ----------
 DEFAULT_YOUR_NAME = "Romil"
 DEFAULT_HER_NAME = "Arshiya"
-DEFAULT_DATE_IDEA = "Lets book a hotel this weekend and have fun"
+DEFAULT_DATE_IDEA = "dinner + dessert + a long walk"
 DEFAULT_SONG_LINK = ""  # e.g. https://open.spotify.com/track/...
 
 # ---------- Sidebar personalization (ONLY for you with the secret key) ----------
@@ -53,10 +52,10 @@ st.markdown(
         border-radius: 18px;
         box-shadow: 0 10px 30px rgba(255, 105, 180, 0.08);
       }
-      .center { display: flex; justify-content: center; }
       .footer { text-align:center; opacity:0.75; margin-top: 22px; font-size: 14px; }
       button[kind="primary"] { border-radius: 999px !important; }
       button[kind="secondary"] { border-radius: 999px !important; }
+      button { transition: transform 0.2s ease; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -74,7 +73,6 @@ if "yes_size" not in st.session_state:
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IMAGE_FOLDER = os.path.join(BASE_DIR, "images")
 
-# Supports any extension; picks the first match per number
 CANDIDATES = [
     ("01", [".jpg", ".jpeg", ".png", ".webp"]),
     ("02", [".jpg", ".jpeg", ".png", ".webp"]),
@@ -147,25 +145,31 @@ with st.container():
     if st.session_state.stage == "ask":
         render_hearts()
 
-        col1, col2 = st.columns(2, gap="large")
+        # ---------- PERFECTLY ALIGNED BUTTON ROW (flexbox) ----------
+        st.markdown(
+            f"""
+            <div style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 40px;
+                margin-top: 12px;
+                margin-bottom: 12px;
+            ">
+                <div style="transform: scale({st.session_state.yes_size}); transform-origin: center;">
+            """,
+            unsafe_allow_html=True,
+        )
 
-        # YES button grows with each NO click
-        with col1:
-            st.markdown(
-                f"""
-                <div class="center">
-                  <div style="transform: scale({st.session_state.yes_size}); transform-origin: center;">
-                """,
-                unsafe_allow_html=True,
-            )
-            st.button("YES 💖", type="primary", use_container_width=True, on_click=accept)
-            st.markdown("</div></div>", unsafe_allow_html=True)
+        # YES button (inside the scaled wrapper)
+        st.button("YES 💖", type="primary", key="yes_btn", on_click=accept)
 
-        # NO button shows next image each time
-        with col2:
-            st.button("No 🙈", type="secondary", use_container_width=True, on_click=nope)
+        # Close YES wrapper, render NO button, close flex container
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.button("No 🙈", type="secondary", key="no_btn", on_click=nope)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Show reaction message + image after at least one "No"
+        # Reaction message + image after at least one "No"
         if st.session_state.no_clicks > 0:
             st.info(f"{random.choice(NO_RESPONSES)} (No clicks: {st.session_state.no_clicks})")
             st.write("😈 The YES button is getting stronger...")
@@ -178,7 +182,7 @@ with st.container():
                 st.warning(
                     "I couldn't find your images. Make sure your repo has a folder named `images/` "
                     "in the root and files named `01.jpg`..`05.jpg` (or .jpeg/.png/.webp). "
-                    "Also note Linux is case-sensitive: `images` ≠ `Images`."
+                    "Linux is case-sensitive: `images` ≠ `Images`."
                 )
 
         st.divider()
