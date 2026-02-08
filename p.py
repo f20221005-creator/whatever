@@ -237,7 +237,7 @@ if "yes_size" not in st.session_state:
 # IMAGES 01..05 (cloud-safe)
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-IMAGE_FOLDER = os.path.join(BASE_DIR, "images")
+IMAGE_FOLDER = os.path.join(BASE_DIR, "Images")
 
 CANDIDATES = [
     ("01", [".jpg", ".jpeg", ".png", ".webp"]),
