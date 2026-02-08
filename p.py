@@ -22,7 +22,7 @@ show_custom = (admin_key == SECRET)
 # ---------- Default values (what everyone sees) ----------
 DEFAULT_YOUR_NAME = "Romil"
 DEFAULT_HER_NAME = "Arshiya"
-DEFAULT_DATE_IDEA = "dinner + dessert + a long walk"
+DEFAULT_DATE_IDEA = "Lets book a hotel this weekend and have fun"
 DEFAULT_SONG_LINK = ""  # e.g. https://open.spotify.com/track/...
 
 # ---------- Sidebar personalization (ONLY for you with the secret key) ----------
